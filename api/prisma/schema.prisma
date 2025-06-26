@@ -13,8 +13,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Client{
   id    Int    @id @default(autoincrement())
   email String @unique
   name  String?
+  bio String? 
+  status Status @default(ACTIVE)
+  creditedAt DateTime @default(now())
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  BANNED
+}
+
+model Banker {
+  id Int @id 
+  name String
+  terminal Int @default(0)
+  payGrade Int @default(1)
+}
+
+model product {
+  id Int @id @default(autoincrement())
+  sku String @unique
+  name String
+  price Float
+  description String?
 }
