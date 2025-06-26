@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:17.5-alpine #current version (lightweight)
+    container_name: playtest-db #testing
+    restart: unless-stopped #auto restart after reboot or crash
+    ports:
+      - "5432:5432" #maps second value (runs on 5432) to first @local
+    environment:
+      POSTGRES_USER: mgalindo15 #username
+      POSTGRES_PASSWORD: playpass1 #need a password
+      POSTGRES_DB: playtest_dev #name of db container
+      LANG: en_US.utf8 #might need to alter depending on language conventions
+    volumes:
+      - db-data:/var/lib/postgresql/data #this saves volumes (data) to local storage
+      - ./db/init:/docker-entrypoint-initdb.d:ro #useful for executing seed scripts
+
+  pgadmin:
+    image: dpage/pgadmin4:8.6 #latest
+    container_name: playtest-pgadmin #name of container to access in gui
+    restart: unless-stopped
+    depends_on:
+      - db #dependency runs db (pgs) --> gui
+    ports:
+      - "5050:80" #different instances / porting from main
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@playtest.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin #save to local
+
+volumes:
+  db-data:
+    driver: local
+  pgadmin-data:
+    driver: local
